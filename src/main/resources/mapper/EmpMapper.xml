@@ -3,9 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.contacts.mapper.EmpMapper">
-<update id="updateUserInfo">
-    UPDATE employee
-    SET phone = #{phone}, email = #{email}
-    WHERE emp_id = #{emp_id}
-</update>
+    <update id="updateUserInfo" parameterType="com.contacts.pojo.Emp">
+        UPDATE employee
+        SET phone = #{phone}, email = #{email}
+        WHERE emp_id = #{emp_id}
+    </update>
+
 </mapper>

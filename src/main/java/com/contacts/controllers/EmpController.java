@@ -1,18 +1,15 @@
 package com.contacts.controllers;
 
 import com.contacts.pojo.Emp;
-import com.contacts.pojo.LoginInfo;
 import com.contacts.pojo.Result;
 import com.contacts.service.Empservice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +40,18 @@ public class EmpController {
             return Result.error("更新失败");
         }
 
-
+    }
+        @PostMapping("/addEmployee")
+        public Result addEmployee(@RequestBody Emp emp) {
+            return empService.addEmployee(emp);
+        }
+    @PostMapping("/deleteEmployee")
+    public Result deleteEmployee(@RequestBody Map<String, String> payload) {
+        String emp_id = payload.get("emp_id");
+        return empService.deleteEmployee(emp_id);
+    }
+    @PostMapping("/updateEmployee")
+    public Result updateEmployee(@RequestBody Emp emp) {
+        return empService.updateEmployee(emp);
     }
 }

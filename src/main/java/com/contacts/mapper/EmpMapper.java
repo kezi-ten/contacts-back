@@ -2,10 +2,7 @@ package com.contacts.mapper;
 
 import com.contacts.pojo.Emp;
 import com.contacts.pojo.EmpLog;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -31,4 +28,15 @@ public interface EmpMapper {
         @Insert("insert into emp_log (operate_time, info) values (#{operateTime}, #{info})")
         public void insert(EmpLog empLog);
 
+    @Insert("INSERT INTO employee (emp_id, name, phone, department_id, position, password, email) " +
+            "VALUES (#{emp.emp_id}, #{emp.name}, #{emp.phone}, #{emp.department_id}, #{emp.position}, #{emp.password}, #{emp.email})")
+    void insertemp(@Param("emp") Emp emp);
+
+    @Delete("DELETE FROM employee WHERE emp_id = #{emp_id}")
+    int deleteById(@Param("emp_id") String emp_id);
+
+    @Update("UPDATE employee SET name = #{emp.name},  department_id = #{emp.department_id}, " +
+            "position = #{emp.position}, password = #{emp.password} " +
+            "WHERE emp_id = #{emp.emp_id}")
+    int update(@Param("emp") Emp emp);
 }

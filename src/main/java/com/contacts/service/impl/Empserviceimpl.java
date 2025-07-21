@@ -1,8 +1,7 @@
 package com.contacts.service.impl;
 
-import com.contacts.pojo.Emp;
-import com.contacts.pojo.EmpLog;
-import com.contacts.pojo.LoginInfo;
+import com.contacts.mapper.DepartmentMapper;
+import com.contacts.pojo.*;
 import com.contacts.service.Empservice;
 import com.contacts.utils.JwtUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,8 @@ public class Empserviceimpl implements Empservice{
     private EmpMapper empMapper; // 注入EmpMapper
     @Autowired
     private EmpMapper empLogMapper;
+    @Autowired
+    private DepartmentMapper DepartmentMapper;
     @Override
     public LoginInfo login(Emp emp) {
         Emp empLogin = empMapper.getUsernameAndPassword(emp);
@@ -56,5 +57,33 @@ public class Empserviceimpl implements Empservice{
         return rows > 0;
 
 
+    }
+    @Override
+    public Result addDepartment(Department department) {
+        DepartmentMapper.insert(department);
+        return Result.success("新增部门成功");
+    }
+    @Override
+    public Result addEmployee(Emp emp) {
+
+        empMapper.insertemp(emp);
+        return Result.success("新增员工成功");}
+    @Override
+    public Result deleteEmployee(String emp_id) {
+        int rows = empMapper.deleteById(emp_id);
+        if (rows > 0) {
+            return Result.success("删除员工成功");
+        } else {
+            return Result.error("删除员工失败，员工不存在");
+        }
+    }
+    @Override
+    public Result updateEmployee(Emp emp) {
+        int rows = empMapper.update(emp);
+        if (rows > 0) {
+            return Result.success("更新员工信息成功");
+        } else {
+            return Result.error("更新员工信息失败，员工不存在");
+        }
     }
 }

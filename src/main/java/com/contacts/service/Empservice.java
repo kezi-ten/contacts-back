@@ -1,8 +1,6 @@
 package com.contacts.service;
 
-import com.contacts.pojo.Emp;
-import com.contacts.pojo.EmpLog;
-import com.contacts.pojo.LoginInfo;
+import com.contacts.pojo.*;
 
 import java.util.List;
 
@@ -14,4 +12,9 @@ public interface Empservice {
     List<Emp> getAllEmployees();
     boolean updateUserInfo(Emp emp);
     public void insertLog(EmpLog empLog);
+    Result addDepartment(Department department);
+    Result addEmployee(Emp emp);
+    Result deleteEmployee(String emp_id);
+    Result updateEmployee(Emp emp);
+
 }
