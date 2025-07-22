@@ -12,9 +12,8 @@ public interface Empservice {
     List<Emp> getAllEmployees();
     boolean updateUserInfo(Emp emp);
     public void insertLog(EmpLog empLog);
-    Result addDepartment(Department department);
     Result addEmployee(Emp emp);
     Result deleteEmployee(String emp_id);
     Result updateEmployee(Emp emp);
-
+    Result addDepartment(Department department);
 }

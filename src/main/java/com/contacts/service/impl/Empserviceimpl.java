@@ -58,11 +58,24 @@ public class Empserviceimpl implements Empservice{
 
 
     }
+    @Transactional
     @Override
     public Result addDepartment(Department department) {
+        if (department.getName() == null || department.getName().trim().isEmpty()) {
+            return Result.error("部门名称不能为空");
+        }
+
+        // 1. 插入部门
         DepartmentMapper.insert(department);
-        return Result.success("新增部门成功");
+
+        // 2. 更新主管员工的部门和职位
+        if (department.getSupervisor_id() != null && !department.getSupervisor_id().trim().isEmpty()) {
+            empMapper.updateEmployeeDepartmentAndPosition(department.getSupervisor_id(), department.getName());
+        }
+
+        return Result.success("新增部门并更新员工部门成功");
     }
+
     @Override
     public Result addEmployee(Emp emp) {
 
@@ -80,6 +93,13 @@ public class Empserviceimpl implements Empservice{
     @Override
     public Result updateEmployee(Emp emp) {
         int rows = empMapper.update(emp);
+        if ("部门总管".equals(emp.getPosition())) {
+            if (emp.getDepartment_id() != null && !emp.getDepartment_id().isEmpty()) {
+                DepartmentMapper.updateDepartmentSupervisor(emp.getEmp_id(), emp.getDepartment_id());
+            }
+        }
+
+
         if (rows > 0) {
             return Result.success("更新员工信息成功");
         } else {
