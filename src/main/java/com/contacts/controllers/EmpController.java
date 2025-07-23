@@ -141,4 +141,39 @@ public class EmpController {
         log.info("签名认证成功");
         return empService.updateEmployee(emp);
     }
+    @PostMapping("/updateDepartment")
+    public Result updateDepartment(@RequestBody UpdateDepartment updateDepartment,
+                                   @RequestHeader("X-Signature") String signature,
+                                   @RequestHeader("X-Timestamp") String timestamp) {
+        String oldName = updateDepartment.getOldName();
+        String newName = updateDepartment.getNewName();
+
+        log.info("收到更新部门请求: oldName={}, newName={}, signature={}, timestamp={}", updateDepartment.getOldName(), updateDepartment.getNewName(),  signature, timestamp);
+
+        try {
+
+
+            String dataStr = JSON.toJSONString(updateDepartment);
+            boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
+
+            if (!isValidSignature) {
+                return Result.error("签名验证失败");
+            }
+        } catch (Exception e) {
+            log.error("签名验证失败", e);
+            return Result.error("签名验证失败");
+        }
+
+        log.info("签名认证成功");
+
+        // 执行更新操作
+        int rowsAffected = empService.updateDepartment(oldName, newName);
+        if (rowsAffected > 0) {
+            Map<String, String> resultData = Map.of("oldName", oldName, "newName", newName);
+            return Result.success(resultData);
+        } else {
+            return Result.error("未找到匹配的部门名，更新失败");
+        }
+    }
+
 }

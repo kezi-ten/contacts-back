@@ -16,4 +16,5 @@ public interface Empservice {
     Result deleteEmployee(String emp_id);
     Result updateEmployee(Emp emp);
     Result addDepartment(Department department);
+    int updateDepartment(String oldName, String newName);
 }

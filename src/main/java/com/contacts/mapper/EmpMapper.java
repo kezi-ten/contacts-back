@@ -48,4 +48,11 @@ public interface EmpMapper {
     int updateEmployeeDepartmentAndPosition(@Param("supervisor_id") String supervisor_id,
                                             @Param("newDepartmentName")  String newDepartmentName);
 
+
+    @Update("UPDATE department SET name = #{newName} WHERE name = #{oldName}")
+    int updateDepartmentName(@Param("oldName") String oldName, @Param("newName") String newName);
+
+    @Update("UPDATE employee SET department_id = #{newName} WHERE department_id = #{oldName}")
+    int updateEmployeeDepartmentName(@Param("oldName") String oldName, @Param("newName") String newName);
+
 }

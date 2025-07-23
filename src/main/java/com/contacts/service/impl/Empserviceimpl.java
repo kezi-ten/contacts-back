@@ -106,4 +106,19 @@ public class Empserviceimpl implements Empservice{
             return Result.error("更新员工信息失败，员工不存在");
         }
     }
+    @Override
+    public int updateDepartment(String oldName, String newName) {
+        int rowsAffected = 0;
+
+        // 更新部门表
+        int deptRows = empMapper.updateDepartmentName(oldName, newName);
+        rowsAffected += deptRows;
+
+        // 更新员工表中的部门名
+        int empRows = empMapper.updateEmployeeDepartmentName(oldName, newName);
+        rowsAffected += empRows;
+
+        return rowsAffected;
+    }
+
 }
