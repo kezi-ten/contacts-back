@@ -51,7 +51,7 @@ public class Empserviceimpl implements Empservice{
     public boolean updateUserInfo(Emp emp) {
 
         int rows = empMapper.updateUserInfo(emp.getEmp_id(), emp.getPhone(), emp.getEmail());
-        //int a=1/0;
+       // int a=1/0;
         EmpLog empLog = new EmpLog(null, LocalDateTime.now(), "(id="+emp.getEmp_id()+", phone="+emp.getPhone()+", email="+emp.getEmail()+")");
         this.insertLog(empLog);
         return rows > 0;

@@ -21,12 +21,12 @@ public class TokenFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
 
-        // ✅ 放行 OPTIONS 请求（CORS 预检）
+      // 放行 OPTIONS 请求（CORS 预检）
         if ("OPTIONS".equals(request.getMethod())) {
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Captcha-Key, X-Captcha");
             response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
@@ -36,6 +36,11 @@ public class TokenFilter implements Filter {
         //2. 判断请求url中是否包含login，如果包含，说明是登录操作，放行。
         if(url.contains("login")){ //登录请求
             log.info("登录请求 , 直接放行");
+            chain.doFilter(request, response);
+            return;
+        }
+        if(url.contains("captcha")){
+            log.info("验证码请求 , 直接放行");
             chain.doFilter(request, response);
             return;
         }
