@@ -15,7 +15,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:8081") // 前端地址
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("Content-Type", "Authorization","X-Captcha-Key", "X-Captcha")
+                        .allowedHeaders("Content-Type", "Authorization","X-Captcha-Key", "X-Captcha","X-Signature","X-Timestamp")
                         .exposedHeaders("Authorization")
                         .allowCredentials(true)
                         .maxAge(3600);// 如果使用了 withCredentials

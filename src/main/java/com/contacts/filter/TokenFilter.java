@@ -26,7 +26,7 @@ public class TokenFilter implements Filter {
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:8081");
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Captcha-Key, X-Captcha");
+            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Captcha-Key, X-Captcha ,X-Signature,X-Timestamp");
             response.setStatus(HttpServletResponse.SC_OK);
             return;
         }

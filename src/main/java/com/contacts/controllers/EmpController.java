@@ -1,14 +1,13 @@
 package com.contacts.controllers;
 
-import com.contacts.pojo.Emp;
-import com.contacts.pojo.Result;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.contacts.pojo.*;
 import com.contacts.service.Empservice;
+import com.contacts.utils.SignatureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,28 @@ public class EmpController {
     }
 
     @PostMapping("/update")
-    public Result updateUserInfo(@RequestBody Emp emp) {
+    public Result updateUserInfo(@RequestBody Emp emp,
+                                 @RequestHeader("X-Signature") String signature,
+                                 @RequestHeader("X-Timestamp") String timestamp) {
+        log.info("收到更新个人信息请求: emp={},signature={}, timestamp={}",
+                emp,  signature, timestamp);
+        try {
+            UpdateSignatureDTO dto = new UpdateSignatureDTO();
+            dto.setEmp_id(emp.getEmp_id());
+            dto.setPhone(emp.getPhone());
+            dto.setEmail(emp.getEmail());
+            String dataStr = JSON.toJSONString(dto); // 将 Emp 对象转换为 JSON 字符串
+            boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
+            if (!isValidSignature) {
+                log.error("签名验证错误");
+                return Result.error("签名验证失败");
+            }
+        } catch (Exception e) {
+            log.error("签名验证失败", e);
+            return Result.error("签名验证失败");
+        }
+        log.info("签名认证成功");
+
         boolean isUpdated = empService.updateUserInfo(emp);
         if (isUpdated) {
             return Result.success("更新成功");
@@ -42,16 +62,83 @@ public class EmpController {
 
     }
         @PostMapping("/addEmployee")
-        public Result addEmployee(@RequestBody Emp emp) {
+        public Result addEmployee(@RequestBody Emp emp,
+                                  @RequestHeader("X-Signature") String signature,
+                                  @RequestHeader("X-Timestamp") String timestamp) {
+        log.info("收到添加员工请求: emp={}, signature={}, timestamp={}", emp, signature, timestamp);
+            try {
+                // 构建签名 DTO
+                AddEmployeeSignatureDTO dto = new AddEmployeeSignatureDTO();
+                dto.setEmp_id(emp.getEmp_id());
+                dto.setName(emp.getName());
+                dto.setDepartment_id(emp.getDepartment_id());
+                dto.setPosition(emp.getPosition());
+                dto.setPassword(emp.getPassword());
+
+                String dataStr = JSON.toJSONString(dto, SerializerFeature.SortField);
+                boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
+
+                if (!isValidSignature) {
+                    return Result.error("签名验证失败");
+                }
+            } catch (Exception e) {
+                log.error("签名验证失败", e);
+                return Result.error("签名验证失败");
+            }
+            log.info("签名认证成功");
             return empService.addEmployee(emp);
         }
     @PostMapping("/deleteEmployee")
-    public Result deleteEmployee(@RequestBody Map<String, String> payload) {
+    public Result deleteEmployee(@RequestBody Map<String, String> payload,
+                                 @RequestHeader("X-Signature") String signature,
+                                 @RequestHeader("X-Timestamp") String timestamp) {
         String emp_id = payload.get("emp_id");
+        log.info("收到删除员工请求: emp_id={}, signature={}, timestamp={}", emp_id, signature, timestamp);
+
+        try {
+            // 构建签名 DTO
+            DeleteEmployeeSignatureDTO dto = new DeleteEmployeeSignatureDTO();
+            dto.setEmp_id(emp_id);
+
+            String dataStr = JSON.toJSONString(dto);
+            boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
+
+            if (!isValidSignature) {
+                return Result.error("签名验证失败");
+            }
+        } catch (Exception e) {
+            log.error("签名验证失败", e);
+            return Result.error("签名验证失败");
+        }
+
+        log.info("签名认证成功");
         return empService.deleteEmployee(emp_id);
     }
     @PostMapping("/updateEmployee")
-    public Result updateEmployee(@RequestBody Emp emp) {
+    public Result updateEmployee(@RequestBody Emp emp,
+                                 @RequestHeader("X-Signature") String signature,
+                                 @RequestHeader("X-Timestamp") String timestamp) {
+        log.info("收到修改员工请求: emp={}, signature={}, timestamp={}", emp, signature, timestamp);
+        try {
+            // 构建签名 DTO
+            AddEmployeeSignatureDTO dto = new AddEmployeeSignatureDTO();
+            dto.setEmp_id(emp.getEmp_id());
+            dto.setName(emp.getName());
+            dto.setDepartment_id(emp.getDepartment_id());
+            dto.setPosition(emp.getPosition());
+            dto.setPassword(emp.getPassword());
+
+            String dataStr = JSON.toJSONString(dto, SerializerFeature.SortField);
+            boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
+
+            if (!isValidSignature) {
+                return Result.error("签名验证失败");
+            }
+        } catch (Exception e) {
+            log.error("签名验证失败", e);
+            return Result.error("签名验证失败");
+        }
+        log.info("签名认证成功");
         return empService.updateEmployee(emp);
     }
 }
