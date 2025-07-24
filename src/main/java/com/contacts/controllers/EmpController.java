@@ -175,5 +175,11 @@ public class EmpController {
             return Result.error("未找到匹配的部门名，更新失败");
         }
     }
+    @PostMapping("/admins")
+    public Result getAllAdmins() {
+        log.info("获取管理员列表");
+        List<Admin> adminList = empService.getAllAdmins();
+        return Result.success(adminList);
+    }
 
 }

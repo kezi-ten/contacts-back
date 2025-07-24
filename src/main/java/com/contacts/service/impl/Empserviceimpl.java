@@ -153,5 +153,10 @@ public class Empserviceimpl implements Empservice{
 
         return rowsAffected;
     }
+    @Override
+    public List<Admin> getAllAdmins() {
+
+        return empMapper.getAllAdmins();
+    }
 
 }

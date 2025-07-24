@@ -1,5 +1,6 @@
 package com.contacts.mapper;
 
+import com.contacts.pojo.Admin;
 import com.contacts.pojo.Emp;
 import com.contacts.pojo.EmpLog;
 import org.apache.ibatis.annotations.*;
@@ -55,4 +56,6 @@ public interface EmpMapper {
     @Update("UPDATE employee SET department_id = #{newName} WHERE department_id = #{oldName}")
     int updateEmployeeDepartmentName(@Param("oldName") String oldName, @Param("newName") String newName);
 
+    @Select("SELECT emp_id FROM admin")
+    List<Admin> getAllAdmins();
 }
