@@ -27,7 +27,6 @@ public class DepartmentController {
             log.info("收到新增部门请求: department={}, signature={}, timestamp={}", department, signature, timestamp);
 
             try {
-                // 构建签名 DTO
                 DepartmentSignatureDTO dto = new DepartmentSignatureDTO();
                 dto.setName(department.getName());
                 dto.setSupervisor_id(department.getSupervisor_id());

@@ -154,9 +154,24 @@ public class Empserviceimpl implements Empservice{
         return rowsAffected;
     }
     @Override
-    public List<Admin> getAllAdmins() {
-
-        return empMapper.getAllAdmins();
+    public boolean checkUserIsAdmin(String token) {
+        try {
+            // 解析 JWT 获取用户 ID
+            Map<String, Object> claims = JwtUtils.parseJwt(token);
+            String empId = (String) claims.get("id");
+            log.info("解析得到的用户 ID: {}", empId); // 打印解析得到的用户
+            // 查询 admin 表
+            List<Admin> admins = empMapper.getAllAdmins();
+            for (Admin admin : admins) {
+                if (admin.getEmp_id().equals(empId)) {
+                    return true;
+                }
+            }
+            log.info("未在管理员列表中找到用户 ID 为 {} 的管理员", empId);
+            return false;
+        } catch (Exception e) {
+            log.error("验证管理员身份失败", e);
+            return false;
+        }
     }
-
 }

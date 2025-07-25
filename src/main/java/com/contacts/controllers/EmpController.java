@@ -175,11 +175,13 @@ public class EmpController {
             return Result.error("未找到匹配的部门名，更新失败");
         }
     }
-    @PostMapping("/admins")
-    public Result getAllAdmins() {
-        log.info("获取管理员列表");
-        List<Admin> adminList = empService.getAllAdmins();
-        return Result.success(adminList);
+    @PostMapping("/checkAdmin")
+    public Result checkAdmin(@RequestHeader("Authorization") String token) {
+        // 去除 Bearer 前缀
+        token = token.replace("Bearer ", "");
+        boolean isAdmin = empService.checkUserIsAdmin(token);
+        log.info("用户是否为管理员: {}", isAdmin);
+        return Result.success(isAdmin);
     }
 
 }

@@ -11,7 +11,7 @@ public class SignatureUtil {
     private static final int TIMESTAMP_TOLERANCE = 300;
 
     public static boolean verifySignature(String dataStr, String timestamp, String signature) throws Exception {
-        // 1. 验证时间戳是否合法
+        // 验证时间戳是否合法
         long requestTime;
         try {
             requestTime = Long.parseLong(timestamp);

@@ -17,5 +17,6 @@ public interface Empservice {
     Result updateEmployee(Emp emp);
     Result addDepartment(Department department);
     int updateDepartment(String oldName, String newName);
-    List<Admin> getAllAdmins();
+    boolean checkUserIsAdmin(String token);
+
 }

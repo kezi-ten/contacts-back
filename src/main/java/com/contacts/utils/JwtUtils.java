@@ -36,4 +36,11 @@ public class JwtUtils {
                 .getBody();
         return claims;
     }
+    public static Map<String, Object> parseJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(signKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims;
+    }
 }
