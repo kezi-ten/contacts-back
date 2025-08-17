@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.contacts.pojo.*;
 import com.contacts.service.Empservice;
+import com.contacts.utils.CryptoUtil;
 import com.contacts.utils.SignatureUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static com.contacts.utils.CryptoUtil.decrypt;
 
 
 //操作日志表   redis
@@ -27,7 +30,16 @@ public class EmpController {
 
         log.info("获取所有员工信息");
         List<Emp> empList = empService.getAllEmployees();
-        return Result.success(empList);
+        try {
+
+            String jsonData = JSON.toJSONString(empList);
+            String encryptedData = CryptoUtil.encrypt(jsonData);
+
+            return Result.success(encryptedData);
+        } catch (Exception e) {
+            log.error("加密数据失败", e);
+            return Result.error("加密数据失败");
+        }
     }
 
     @PostMapping("/update")
@@ -37,11 +49,8 @@ public class EmpController {
         log.info("收到更新个人信息请求: emp={},signature={}, timestamp={}",
                 emp,  signature, timestamp);
         try {
-            UpdateSignatureDTO dto = new UpdateSignatureDTO();
-            dto.setEmp_id(emp.getEmp_id());
-            dto.setPhone(emp.getPhone());
-            dto.setEmail(emp.getEmail());
-            String dataStr = JSON.toJSONString(dto); // 将 Emp 对象转换为 JSON 字符串
+
+            String dataStr = JSON.toJSONString(emp,SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
             boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
             if (!isValidSignature) {
                 log.error("签名验证错误");
@@ -67,15 +76,9 @@ public class EmpController {
                                   @RequestHeader("X-Timestamp") String timestamp) {
         log.info("收到添加员工请求: emp={}, signature={}, timestamp={}", emp, signature, timestamp);
             try {
-                // 构建签名 DTO
-                AddEmployeeSignatureDTO dto = new AddEmployeeSignatureDTO();
-                dto.setEmp_id(emp.getEmp_id());
-                dto.setName(emp.getName());
-                dto.setDepartment_id(emp.getDepartment_id());
-                dto.setPosition(emp.getPosition());
-                dto.setPassword(emp.getPassword());
 
-                String dataStr = JSON.toJSONString(dto, SerializerFeature.SortField);
+
+                String dataStr = JSON.toJSONString(emp,SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
                 boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
 
                 if (!isValidSignature) {
@@ -89,18 +92,16 @@ public class EmpController {
             return empService.addEmployee(emp);
         }
     @PostMapping("/deleteEmployee")
-    public Result deleteEmployee(@RequestBody Map<String, String> payload,
+    public Result deleteEmployee(@RequestBody Emp emp,
                                  @RequestHeader("X-Signature") String signature,
                                  @RequestHeader("X-Timestamp") String timestamp) {
-        String emp_id = payload.get("emp_id");
+        String emp_id = emp.getEmp_id();
         log.info("收到删除员工请求: emp_id={}, signature={}, timestamp={}", emp_id, signature, timestamp);
 
         try {
-            // 构建签名 DTO
-            DeleteEmployeeSignatureDTO dto = new DeleteEmployeeSignatureDTO();
-            dto.setEmp_id(emp_id);
 
-            String dataStr = JSON.toJSONString(dto);
+
+            String dataStr = JSON.toJSONString(emp,SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
             boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
 
             if (!isValidSignature) {
@@ -115,20 +116,17 @@ public class EmpController {
         return empService.deleteEmployee(emp_id);
     }
     @PostMapping("/updateEmployee")
-    public Result updateEmployee(@RequestBody Emp emp,
+    public Result updateEmployee(@RequestBody Map<String, String> requestBody,
                                  @RequestHeader("X-Signature") String signature,
-                                 @RequestHeader("X-Timestamp") String timestamp) {
-        log.info("收到修改员工请求: emp={}, signature={}, timestamp={}", emp, signature, timestamp);
-        try {
-            // 构建签名 DTO
-            AddEmployeeSignatureDTO dto = new AddEmployeeSignatureDTO();
-            dto.setEmp_id(emp.getEmp_id());
-            dto.setName(emp.getName());
-            dto.setDepartment_id(emp.getDepartment_id());
-            dto.setPosition(emp.getPosition());
-            dto.setPassword(emp.getPassword());
+                                 @RequestHeader("X-Timestamp") String timestamp) throws Exception {
+        log.info("收到修改员工请求: emp={}, signature={}, timestamp={}", requestBody, signature, timestamp);
 
-            String dataStr = JSON.toJSONString(dto, SerializerFeature.SortField);
+
+            String decryptedPayload = CryptoUtil.decrypt(requestBody.get("encryptedPayload"));
+            Emp emp = JSON.parseObject(decryptedPayload, Emp.class);
+            log.info("解密后的emp: {}", emp);
+            try {
+            String dataStr = JSON.toJSONString(emp,SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
             boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
 
             if (!isValidSignature) {
@@ -152,8 +150,8 @@ public class EmpController {
 
         try {
 
+            String dataStr = JSON.toJSONString(updateDepartment,SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
 
-            String dataStr = JSON.toJSONString(updateDepartment);
             boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
 
             if (!isValidSignature) {

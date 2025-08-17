@@ -1,10 +1,12 @@
 package com.contacts.utils;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
-
+@Slf4j
 public class SignatureUtil {
     private static final String SECRET_KEY = "e8f3a7b2c9d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0"; // 与前端保持一致
     private static final String HMAC_SHA256 = "HmacSHA256";
@@ -38,6 +40,7 @@ public class SignatureUtil {
             hexString.append(hex);
         }
         String expectedSignature = hexString.toString();
+        log.info("expectedSignature: {}", expectedSignature);
         return expectedSignature.equals(signature);
     }
 }
