@@ -3,7 +3,6 @@ package com.contacts.controllers;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.contacts.pojo.Department;
-import com.contacts.pojo.DepartmentSignatureDTO;
 import com.contacts.pojo.Result;
 
 import com.contacts.service.Empservice;
@@ -27,11 +26,7 @@ public class DepartmentController {
             log.info("收到新增部门请求: department={}, signature={}, timestamp={}", department, signature, timestamp);
 
             try {
-                DepartmentSignatureDTO dto = new DepartmentSignatureDTO();
-                dto.setName(department.getName());
-                dto.setSupervisor_id(department.getSupervisor_id());
-
-                String dataStr = JSON.toJSONString(dto, SerializerFeature.SortField);
+                String dataStr = JSON.toJSONString(department,SerializerFeature.WriteMapNullValue, SerializerFeature.SortField);
                 boolean isValidSignature = SignatureUtil.verifySignature(dataStr, timestamp, signature);
 
                 if (!isValidSignature) {

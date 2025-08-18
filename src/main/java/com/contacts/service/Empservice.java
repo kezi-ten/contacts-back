@@ -19,4 +19,5 @@ public interface Empservice {
     int updateDepartment(String oldName, String newName);
     boolean checkUserIsAdmin(String token);
 
+
 }

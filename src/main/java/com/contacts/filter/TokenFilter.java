@@ -44,6 +44,11 @@ public class TokenFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
+        if(url.contains("sendEmailCaptcha")){
+            log.info("邮箱验证码请求 , 直接放行");
+            chain.doFilter(request, response);
+            return;
+        }
 
         //3. 获取请求头中的令牌（token）。
         String jwt = request.getHeader("Authorization");

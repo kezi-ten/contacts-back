@@ -8,15 +8,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddEmployeeSignatureDTO {
+public class LoginDTO {
     @JSONField(ordinal = 1)
-    private String emp_id;
+    private String emp_id; //ID
     @JSONField(ordinal = 2)
-    private String name;
+    private String password; //用户名
     @JSONField(ordinal = 3)
-    private String department_id;
+    private String email; //密码
     @JSONField(ordinal = 4)
-    private String position;
-    @JSONField(ordinal = 5)
-    private String password;
+    private String emailCaptcha; //department_id
+
 }
